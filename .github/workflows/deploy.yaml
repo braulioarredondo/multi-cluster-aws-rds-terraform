@@ -17,7 +17,7 @@ env:
   SHA: $(git rev-parse HEAD)
 
 jobs:
-  Multi-cluster-deploy:
+  Checkout:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -34,13 +34,287 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       ########################## EKS ##########################
-      - name: EKS Deploy
+  EKS-Deployment: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          
+      - name: EKS Deployment
         if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
         run: |-   
           cd 01-ekscluster-terraform-manifests
           terraform init
           terraform apply --auto-approve  
+      
+      ####################### Autoscaler #######################
+  Autoscaler-Deployment: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Autoscaler Deployment
+        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
+        run: |-   
+          cd 02-cluster-autoscaler-terraform-manifests
+          terraform init
+          terraform apply --auto-approve  
+
+      ####################### CW Agent #######################
+  CWAgent-Deployment: 
+    runs-on: ubuntu-latest
+    steps:  
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: CWAgent Deployment
+        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
+        run: |-   
+          cd 03-cloudwatchagent-terraform-manifests
+          terraform init
+          terraform apply --auto-approve  
+
+      ####################### Ingress #######################
+  Ingress-Deployment: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
+      - name: Ingress Deployment
+        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}    
+        run: |-   
+          cd 04-nginx-ingress-terraform-manifests
+          terraform init
+          terraform apply --auto-approve    
+
+      ####################### RDS #######################
+  RDS-Deployment: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
+      - name: RDS Deployment
+        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
+        run: |-   
+          cd 05-rds-terraform-manifests
+          terraform init
+          terraform apply --auto-approve -var="rds_password=$secrets.PG_PASSWORD"
+
+      ####################### Redis #######################
+  Redis-Deployment: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
+      - name: Redis Deployment
+        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
+        run: |-   
+          cd 06-redis-terraform-manifests
+          terraform init
+          terraform apply --auto-approve 
+
+      ####################### EKS APP #######################
+  EKS-App-Deployment: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
+      - name: EKS-App Deployment
+        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
+        run: |-   
+          cd 07-eks-fibonacci-calculator-manifests
+          terraform init
+          terraform apply --auto-approve     
+
+      - name: Get Ingress URL
+      # Get EKS Ingress Service URL
+        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
+        run: |-   
+          aws eks update-kubeconfig --region us-east-1 --name multi-k8s-terraform
+          kubectl get services
+
+      ########################## DESTROY #############################
+  EKS-App-Deletion: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
+      - name: EKS App Destroy
+        if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
+        run: |-   
+          cd 07-eks-fibonacci-calculator-manifests
+          terraform init
+          terraform destroy --auto-approve
+  Redis-Deletion: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
+      - name: Redis Destroy
+        if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
+        run: |-   
+          cd 06-redis-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve   
+  RDS-Deletion: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
+      - name: RDS Destroy
+        if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
+        run: |-   
+          cd 05-rds-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve -var="rds_password=$secrets.PG_PASSWORD"
+  Ingress-Deletion: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
+      - name: Ingress Destroy
+        if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
+        run: |-   
+          cd 04-nginx-ingress-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve 
+  CWAgent-Deletion: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
+      - name: CWAgent Destroy
+        if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
+        run: |-   
+          cd 03-cloudwatchagent-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve 
+  Autoscaler-Deletion: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
+      - name: Autoscaler Destroy
+        if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
+        run: |-   
+          cd 02-cluster-autoscaler-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve
+  EKS-Deletion: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+ 
       - name: EKS Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
         run: |-   
