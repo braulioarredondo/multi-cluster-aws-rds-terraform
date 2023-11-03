@@ -23,6 +23,9 @@ jobs:
       - name: Checkout Repo 
         uses: actions/checkout@v3
 
+       - name: Setup Terraform
+         uses: hashicorp/setup-terraform@v1
+
       ########################## EKS ##########################
       - name: EKS Init
         uses: hashicorp/terraform-github-actions/init@v0.4.0
@@ -193,9 +196,6 @@ jobs:
           kubectl get services
 
       ########################## DESTROY #############################
-      - name: Setup Terraform
-        if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/setup-terraform@v1
 
       - name: EKS App Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
