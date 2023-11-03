@@ -23,17 +23,19 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SCRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
       ########################## EKS ##########################
       - name: EKS Deploy
-        #uses: hashicorp/terraform-github-actions/init@v0.4.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
+        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
         run: |-   
           cd 01-ekscluster-terraform-manifests
           terraform init
@@ -41,11 +43,6 @@ jobs:
 
       - name: EKS Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1   
         run: |-   
           cd 01-ekscluster-terraform-manifests
           terraform init
