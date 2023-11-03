@@ -193,9 +193,12 @@ jobs:
           kubectl get services
 
       ########################## DESTROY #############################
-      - name: EKS App Destroy
+      - name: Setup Terraform
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
         uses: hashicorp/setup-terraform@v1
+
+      - name: EKS App Destroy
+        if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '07-eks-fibonacci-calculator-manifests'
@@ -209,7 +212,6 @@ jobs:
 
       - name: Redis Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '06-redis-terraform-manifests'
@@ -223,7 +225,6 @@ jobs:
 
       - name: RDS Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '05-rds-terraform-manifests'
@@ -237,7 +238,6 @@ jobs:
 
       - name: Ingress Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '04-nginx-ingress-terraform-manifests'
@@ -251,7 +251,6 @@ jobs:
 
       - name: CWAgent Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '03-cloudwatchagent-terraform-manifests'
@@ -265,7 +264,6 @@ jobs:
 
       - name: Autoscaler Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '02-cluster-autoscaler-terraform-manifests'
@@ -279,7 +277,6 @@ jobs:
 
       - name: EKS Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '01-ekscluster-terraform-manifests'
