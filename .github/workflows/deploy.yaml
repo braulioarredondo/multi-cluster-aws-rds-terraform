@@ -203,7 +203,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1   
 
-       - name: Redis Destroy
+      - name: Redis Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
         uses: hashicorp/terraform-github-actions/destroy@v0.4.0
         env:
@@ -213,7 +213,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1     
 
-       - name: RDS Destroy
+      - name: RDS Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
         uses: hashicorp/terraform-github-actions/destroy@v0.4.0
         env:
@@ -225,7 +225,7 @@ jobs:
         with:
           args: -var="rds_password=$secrets.PG_PASSWORD"   
 
-        - name: Ingress Destroy
+      - name: Ingress Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
         uses: hashicorp/terraform-github-actions/destroy@v0.4.0
         env:
@@ -235,7 +235,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1     
 
-        - name: CWAgent Destroy
+      - name: CWAgent Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
         uses: hashicorp/terraform-github-actions/destroy@v0.4.0
         env:
@@ -245,7 +245,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1   
 
-        - name: Autoscaler Destroy
+      - name: Autoscaler Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
         uses: hashicorp/terraform-github-actions/destroy@v0.4.0
         env:
@@ -255,7 +255,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1   
 
-        - name: EKS Destroy
+      - name: EKS Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
         uses: hashicorp/terraform-github-actions/destroy@v0.4.0
         env:
