@@ -195,72 +195,98 @@ jobs:
       ########################## DESTROY #############################
       - name: EKS App Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/terraform-github-actions/destroy@v0.4.0
+        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '07-eks-fibonacci-calculator-manifests'
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1   
+        run: |-   
+          cd 07-eks-fibonacci-calculator-manifests
+          terraform init
+          terraform destroy --auto-approve
 
       - name: Redis Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/terraform-github-actions/destroy@v0.4.0
+        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '06-redis-terraform-manifests'
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1     
+          AWS_REGION: us-east-1   
+        run: |-   
+          cd 06-redis-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve   
 
       - name: RDS Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/terraform-github-actions/destroy@v0.4.0
+        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '05-rds-terraform-manifests'
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1    
-        with:
-          args: -var="rds_password=$secrets.PG_PASSWORD"   
+          AWS_REGION: us-east-1   
+        run: |-   
+          cd 05-rds-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve -var="rds_password=$secrets.PG_PASSWORD"
 
       - name: Ingress Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/terraform-github-actions/destroy@v0.4.0
+        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '04-nginx-ingress-terraform-manifests'
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1     
+          AWS_REGION: us-east-1   
+        run: |-   
+          cd 04-nginx-ingress-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve 
 
       - name: CWAgent Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/terraform-github-actions/destroy@v0.4.0
+        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '03-cloudwatchagent-terraform-manifests'
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1   
+        run: |-   
+          cd 03-cloudwatchagent-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve 
 
       - name: Autoscaler Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/terraform-github-actions/destroy@v0.4.0
+        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '02-cluster-autoscaler-terraform-manifests'
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1   
+        run: |-   
+          cd 02-cluster-autoscaler-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve
 
       - name: EKS Destroy
         if: ${{ github.event.inputs.action == 'Terraform_Destroy'}}
-        uses: hashicorp/terraform-github-actions/destroy@v0.4.0
+        uses: hashicorp/setup-terraform@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '01-ekscluster-terraform-manifests'
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1  
+          AWS_REGION: us-east-1   
+        run: |-   
+          cd 01-ekscluster-terraform-manifests
+          terraform init
+          terraform destroy --auto-approve
