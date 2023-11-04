@@ -43,7 +43,7 @@ resource "kubernetes_deployment_v1" "server" {
             value_from {
                       secret_key_ref {
                         name = kubernetes_secret.pgpassword.metadata[0].name
-                        key = "PGUSER"
+                        key = "user"
                                     }
                       }
           }
@@ -64,7 +64,7 @@ resource "kubernetes_deployment_v1" "server" {
             value_from {
                       secret_key_ref {
                         name = kubernetes_secret.pgpassword.metadata[0].name
-                        key = "PGPASSWORD"
+                        key = "password"
                                     }
                       }
           }
