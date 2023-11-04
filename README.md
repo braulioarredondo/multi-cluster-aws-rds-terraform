@@ -83,6 +83,8 @@ Since this is not deployed using cloudformation, the best way to deploy and dest
 ![Workflow](https://raw.githubusercontent.com/braulioarredondo/multi-cluster-aws-rds-terraform/master/images/workflow.png)
 
 ![Workflow Option](https://raw.githubusercontent.com/braulioarredondo/multi-cluster-aws-rds-terraform/master/images/workflow_option.png)
+
+![Destroy](https://raw.githubusercontent.com/braulioarredondo/multi-cluster-aws-rds-terraform/master/images/destroy.png)
 ## 🛠 Skills
 Javascript, AWS, IAC, Terraform, Docker, EKS, K8s
 
