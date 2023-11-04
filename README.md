@@ -2,7 +2,7 @@
 # multi-cluster-aws-rds-terraform
 
 
-This project is an **AWS Cloudformation Deployment Demo** using EKS and the [multi-k8s](https://github.com/StephenGrider/multi-k8s) image by [Stephen Grider](https://www.linkedin.com/in/stephengrider/). The EKS application is a react application for a Fibionacci calculator. 
+This project is an **AWS Deployment Demo** using EKS, Terraform and the [multi-k8s](https://github.com/StephenGrider/multi-k8s) image by [Stephen Grider](https://www.linkedin.com/in/stephengrider/). The EKS application is a react application for a Fibionacci calculator. 
 
 
 EKS cluster contains the following deployments and services: 
