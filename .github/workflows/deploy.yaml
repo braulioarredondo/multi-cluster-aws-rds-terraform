@@ -18,6 +18,7 @@ env:
 
 jobs:
   Multi-cluster-deploy:
+    if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -35,7 +36,7 @@ jobs:
 
       ########################## EKS ##########################
       - name: EKS Deployment
-        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
+        
         run: |-   
           cd 01-ekscluster-terraform-manifests
           terraform init
@@ -44,7 +45,6 @@ jobs:
       ####################### Autoscaler #######################
 
       - name: Autoscaler Deployment
-        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
         run: |-   
           cd 02-cluster-autoscaler-terraform-manifests
           terraform init
@@ -53,7 +53,6 @@ jobs:
       ####################### CW Agent #######################
 
       - name: CWAgent Deployment
-        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
         run: |-   
           cd 03-cloudwatchagent-terraform-manifests
           terraform init
@@ -62,7 +61,6 @@ jobs:
       ####################### Ingress #######################
 
       - name: Ingress Deployment
-        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}    
         run: |-   
           cd 04-nginx-ingress-terraform-manifests
           terraform init
@@ -71,7 +69,6 @@ jobs:
       ####################### RDS #######################
 
       - name: RDS Deployment
-        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
         run: |-   
           cd 05-rds-terraform-manifests
           terraform init
@@ -80,7 +77,6 @@ jobs:
       ####################### Redis #######################
 
       - name: Redis Deployment
-        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
         run: |-   
           cd 06-redis-terraform-manifests
           terraform init
@@ -89,7 +85,6 @@ jobs:
       ####################### EKS APP #######################
 
       - name: EKS-App Deployment
-        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
         run: |-   
           cd 07-eks-fibonacci-calculator-manifests
           terraform init
@@ -97,7 +92,6 @@ jobs:
 
       - name: Get Ingress URL
       # Get EKS Ingress Service URL
-        if: ${{ github.event.inputs.action == 'Terraform_Apply' || github.event.inputs.action == ''}}
         run: |-   
           aws eks update-kubeconfig --region us-east-1 --name multi-k8s-terraform
           kubectl get services
